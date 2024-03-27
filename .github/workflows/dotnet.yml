@@ -45,27 +45,9 @@ jobs:
         
       - name: Test with the dotnet CLI
         run: dotnet test
-  
-  publish:
-    needs: test
-    runs-on: ubuntu-latest
-    
-    steps:
-      - uses: actions/checkout@v4
-      - name: Setup dotnet
-        uses: actions/setup-dotnet@v3
-        with:
-          dotnet-version: '6.0.x'
-
-      - name: Display dotnet version
-        run: dotnet --version
-      - name: Build
-        run: dotnet build
-      - name: Publish
-        run: dotnet publish
         
   sonarcloud:
-    needs: [test, welcome]
+    needs: welcome
     runs-on: windows-latest
     
     steps:
@@ -105,3 +87,21 @@ jobs:
           .\.sonar\scanner\dotnet-sonarscanner begin /k:"Polivec_ActionsKata" /o:"polivec" /d:sonar.token="${{ secrets.SONAR_TOKEN }}" /d:sonar.host.url="https://sonarcloud.io"
           dotnet build
           .\.sonar\scanner\dotnet-sonarscanner end /d:sonar.token="${{ secrets.SONAR_TOKEN }}"
+          
+  publish:
+    needs: [ test, sonarcloud ]
+    runs-on: ubuntu-latest
+
+    steps:
+      - uses: actions/checkout@v4
+      - name: Setup dotnet
+        uses: actions/setup-dotnet@v3
+        with:
+          dotnet-version: '6.0.x'
+
+      - name: Display dotnet version
+        run: dotnet --version
+      - name: Build
+        run: dotnet build
+      - name: Publish
+        run: dotnet publish        
