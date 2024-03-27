@@ -4,9 +4,15 @@ on: [pull_request]
 
 jobs:
   
-  
+  welcome:
+    runs-on: ubuntu-latest
+    
+    steps:
+      - name: Welcome
+        run: echo "Welcome"
+    
   build:
-
+    needs: welcome
     runs-on: ubuntu-latest
 
     steps:
@@ -20,5 +26,12 @@ jobs:
         run: dotnet --version
       - name: Build
         run: dotnet build
+  
+  test:
+    needs: build
+    runs-on: ubuntu-latest
+
+    steps:
       - name: Test with the dotnet CLI
         run: dotnet test
+  
